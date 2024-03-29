@@ -1,0 +1,83 @@
+*STEP-1:
+Open the AWS account and create the EC2 instance and downlad its .pem file and store it in the folder in which you are going to implement this project.
+
+*STEP-2:
+Open the terminal Traverse to the folder which contains .pem file and connect with the AWS EC2 using 
+ssh link (link like this for example: ssh -i "kafka-stock-market-project.pem" ec2-user@ec2-65-0-132-130.ap-south-1.compute.amazonaws.com)
+provided on the AWS EC2 "connect".
+Note: If you are getting the warning and not able to connect you can refer this video to remove the error and connect to EC2 instance for windows: https://www.youtube.com/watch?v=0eAG0qvE6ZY&t=352s&ab_channel=RefreshCoding
+After connecting go the AWS EC2 instance website >security>change inbound rules>add new>all trafic and choose my IP and save the rule and save changes.(necessary don't skip)
+
+*STEP-3:
+Download the kafka and java software and extract it in the same terminal using below links, make sure to install java.
+------------------------------------------------
+wget https://downloads.apache.org/kafka/3.3.1/kafka_2.12-3.3.1.tgz
+tar -xvf kafka_2.12-3.3.1.tgz
+
+java -version
+sudo yum install java-1.8.0-openjdk         #Note this link may vary according to AWS please check it and install updated java openjdk in the EC2 server only.
+java -version
+cd kafka_2.12-3.3.1
+
+*STEP-4:
+Since the by default your EC2 server is working on private server therefore we have to change its server.properties so it can run in your EC2 public IP
+To do this , you can follow approache shared below --
+  Do a "sudo nano config/server.properties" - 
+  traverse to ADVERTISED_LISTENERS line and de comment it and add your EC2 public IP without removing 9092 port.
+  change ADVERTISED_LISTENERS line to public ip of the EC2 instance
+  save it using Ctrl+X and hit Y and enter to save the changes.
+
+*STEP-5:
+Start Zoo-keeper for kafka:
+-------------------------------
+bin/zookeeper-server-start.sh config/zookeeper.properties
+
+*STEP-6:
+Open another window to start kafka
+But first ssh to to your ec2 machine as done above
+Start Kafka-server:
+----------------------------------------
+Duplicate the session & enter in a new console --
+export KAFKA_HEAP_OPTS="-Xmx256M -Xms128M" (run this command othervise java wont work due to lack of space this commands provide some space of memory to work for java)
+cd kafka_2.12-3.3.1
+bin/kafka-server-start.sh config/server.properties
+
+*STEP-7:
+Create the topicof kafka:
+-----------------------------
+Duplicate the session & enter in a new console --
+cd kafka_2.12-3.3.1
+bin/kafka-topics.sh --create --topic demo_test --bootstrap-server {Put the Public IP of your EC2 Instance:9092} --replication-factor 1 --partitions 1
+
+Start Producer:
+--------------------------
+bin/kafka-console-producer.sh --topic demo_testing2 --bootstrap-server {Put the Public IP of your EC2 Instance:9092} 
+
+Start Consumer:
+-------------------------
+Duplicate the session & enter in a new console --
+cd kafka_2.12-3.3.1
+bin/kafka-console-consumer.sh --topic demo_testing2 --bootstrap-server {Put the Public IP of your EC2 Instance:9092}
+Now you can check we can send the real time data through producer and we are recieving the data in real time on the consumer.
+Now we will implement this project for manual python queries send it usin a CSV file we can also use Stock market API to send data.
+
+*STEP-8:
+Create the .ipynb file for consumer and producer it is updated on my github repo.
+You can also check after connecting to the server of kafka through python noebook by making necessary changes in file  we can see the data is getting updated on consumer side.
+
+*STEP-9:
+Create An AWS IAM user and use its access key to connect to the local machine by downloading AWS CLI and installing it.
+Open the terminal and type "aws configure" provide the acces key and hit enter.
+
+*STEP-10:
+Create AWS S3 bucket give a suitable name.
+Create AWS Glue database connect it to S3 bucke using creating new IAS user for connecting glue and S3 service of AWS.
+Now Also Create AWS Crawler using glue and connect it to the database.
+Now open AWS Athena and connect to this database and also create new bucket for saving query results.
+
+*STEP-11:
+Now we have eveyrthing set up.
+So run the consumer and proucer at the same time and you will notice json files are being stored in the S3 bucket.
+Stop both the process and Now run the crawler it may ake some time.
+after running the crawler the table may be created ow you can run SQL queries on this Stock-Market data to do the data anaylsis.
+Hence we have completed ur project Successfully.
