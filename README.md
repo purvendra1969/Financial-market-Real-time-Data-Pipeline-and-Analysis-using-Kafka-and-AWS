@@ -1,5 +1,5 @@
-# Stock-market-Real-time-Data-Pipeline-and-Analysis-using-Kafka-and-AWS
-It is a Real-time Stock market Data transfer or pipeline project made using AWS and Kafka , Then also performing some data analysis on that data using AWS athena.
+# Financial-market-Real-time-Data-Pipeline-and-Analysis-using-Kafka-and-AWS
+It is a Real-time Equity market Data transfer or pipeline project made using AWS and Kafka , Then also performing some data analysis on that data using AWS athena.
 
 ## Introduction 
 In this project, we will execute an End-To-End Data Engineering Project on Real-Time Stock Market Data using Kafka.
